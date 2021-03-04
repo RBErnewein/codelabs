@@ -57,6 +57,20 @@ class HomePage extends StatelessWidget {
           SizedBox(height: 8),
           IconAndDetail(Icons.calendar_today, 'October 30'),
           IconAndDetail(Icons.location_city, 'San Francisco'),
+          // Add from here
+          Consumer<ApplicationState>(
+            builder: (context, appState, _) => Authentication(
+              email: appState.email,
+              loginState: appState.loginState,
+              startLoginFlow: appState.startLoginFlow,
+              verifyEmail: appState.verifyEmail,
+              signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
+              cancelRegistration: appState.cancelRegistration,
+              registerAccount: appState.registerAccount,
+              signOut: appState.signOut,
+            ),
+          ),
+          // to here
           Divider(
             height: 8,
             thickness: 1,
