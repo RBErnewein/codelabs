@@ -1,3 +1,4 @@
+import 'dart:async';  // new
 import 'package:cloud_firestore/cloud_firestore.dart';  // new
 import 'package:firebase_core/firebase_core.dart'; // new
 import 'package:firebase_auth/firebase_auth.dart'; // new
@@ -110,8 +111,30 @@ class ApplicationState extends ChangeNotifier {
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loginState = ApplicationLoginState.loggedIn;
+        // Add from here
+        _guestBookSubscription = FirebaseFirestore.instance
+            .collection('guestbook')
+            .orderBy('timestamp', descending: true)
+            .snapshots()
+            .listen((snapshot) {
+          _guestBookMessages = [];
+          snapshot.docs.forEach((document) {
+            _guestBookMessages.add(
+              GuestBookMessage(
+                name: document.data()!['name'],
+                message: document.data()!['text'],
+              ),
+            );
+          });
+          notifyListeners();
+        });
+        // to here.
       } else {
         _loginState = ApplicationLoginState.loggedOut;
+        // Add from here
+        _guestBookMessages = [];
+        _guestBookSubscription?.cancel();
+        // to here.
       }
       notifyListeners();
     });
@@ -122,6 +145,12 @@ class ApplicationState extends ChangeNotifier {
 
   String? _email;
   String? get email => _email;
+
+  // Add from here
+  StreamSubscription<QuerySnapshot>? _guestBookSubscription;
+  List<GuestBookMessage> _guestBookMessages = [];
+  List<GuestBookMessage> get guestBookMessages => _guestBookMessages;
+  // to here.
 
   void startLoginFlow() {
     _loginState = ApplicationLoginState.emailAddress;
@@ -195,6 +224,12 @@ class ApplicationState extends ChangeNotifier {
     });
   }
 // To here
+}
+
+class GuestBookMessage {
+  GuestBookMessage({required this.name, required this.message});
+  final String name;
+  final String message;
 }
 
 class GuestBook extends StatefulWidget {
