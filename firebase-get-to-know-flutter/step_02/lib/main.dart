@@ -10,14 +10,12 @@ import 'src/authentication.dart';                  // new
 import 'src/widgets.dart';
 
 void main() {
-  // Modify from here
   runApp(
     ChangeNotifierProvider(
       create: (context) => ApplicationState(),
       builder: (context, _) => App(),
     ),
   );
-  // to here.
 }
 
 class App extends StatelessWidget {
